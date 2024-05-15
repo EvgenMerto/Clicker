@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кликер</title>
+    <style>
+        body {
+            background-color: #800000; /* Бордовый цвет фона */
+        }
+        .button {
+            font-size: 16px; /* Уменьшенный размер шрифта */
+            padding: 5px; /* Уменьшенные отступы */
+            margin: 5px;
+            color: #333;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        #notification {
+            color: red;
+            display: none;
+        }
+        /* Медиазапрос для мобильных устройств */
+        @media only screen and (max-width: 600px) {
+            .button {
+                font-size: 14px; /* Меньший размер шрифта для мобильных устройств */
+                padding: 10px; /* Большие отступы для легкости нажатия */
+            }
+            /* Дополнительные стили для других элементов */
+        }
+    </style>
+</head>
+<body>
+  <div id="clicker" class="button" onclick="clickCount()">Нажми на меня!</div>
+    <p id="count">Количество кликов: 0</p>
+    <div id="extraClick" class="button" onclick="buyExtraClick()">Купить +1 клик (15 кликов)</div>
+    <div id="passiveIncome" class="button" onclick="buyPassiveIncome()">Купить пассивный доход (1000 кликов)</div>
+    <div id="upgrades"></div>
+    <p id="notification"></p>
+
+    <script>
+        var count = 0;
+        var passiveIncomeCost = 1000;
+        var passiveIncomeRate = 2; // Количество кликов в секунду
+        var passiveIncomePurchased = false;
+        var extraClickCost = 15;
+        var extraClicks = 0;
+
+        function clickCount() {
+            count += 1 + extraClicks;
+            updateDisplay();
+        }
+
+        function buyExtraClick() {
+            if(count >= extraClickCost) {
+                count -= extraClickCost;
+                extraClicks++;
+                extraClickCost *= 1.5; // Увеличиваем стоимость в 1.5 раза
+                extraClickCost = Math.floor(extraClickCost); // Округляем стоимость до целого числа
+                document.getElementById('extraClick').innerHTML = 'Купить +1 клик (' + extraClickCost + ' кликов)';
+                hideNotification();
+                updateDisplay();
+            } else {
+                showNotification('Не хватает кликов для покупки улучшения!');
+            }
+        }
+
+        function buyPassiveIncome() {
+            if(count >= passiveIncomeCost && !passiveIncomePurchased) {
+                count -= passiveIncomeCost;
+                passiveIncomePurchased = true;
+                document.getElementById('passiveIncome').style.display = 'none';
+                setInterval(function() {
+                    count += passiveIncomeRate;
+                    updateDisplay();
+                }, 1000);
+                document.getElementById('upgrades').innerHTML += '<p>Пассивный доход: +2 клика/сек</p>';
+                hideNotification();
+            } else {
+                showNotification('Не хватает кликов для покупки пассивного дохода!');
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('count').innerHTML = "Количество кликов: " + count;
+        }
+
+        function showNotification(message) {
+            var notificationElement = document.getElementById('notification');
+            notificationElement.innerHTML = message;
+            notificationElement.style.display = 'block';
+        }
+
+        function hideNotification() {
+            document.getElementById('notification').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
